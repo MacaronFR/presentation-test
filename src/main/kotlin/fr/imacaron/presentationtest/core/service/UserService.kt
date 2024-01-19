@@ -42,4 +42,17 @@ class UserService(
         userRepository += user
         return Result.success(User(userRepository.lastId, user.name, user.scope))
     }
+
+    fun deleteUser(id: Long): Result<User> {
+        val caller = this.caller ?: throw IllegalCallerException("Caller must be set set using with function")
+        val user = userRepository[id] ?: return Result.failure(NotFoundException("User not found"))
+        if(caller.scope < user.scope) {
+            return Result.failure(IllegalCallerException("User have not right to do that"))
+        }
+        if(caller == user) {
+            return Result.failure(IllegalCallerException("User cannot delete himself"))
+        }
+        userRepository.delete(id)
+        return Result.success(user)
+    }
 }

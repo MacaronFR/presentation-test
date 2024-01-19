@@ -25,8 +25,10 @@ class UserRouter(
         routing {
             authenticate(authName) {
                 getSelf()
+                getUser()
                 updateUser()
                 createUser()
+                deleteUser()
             }
         }
     }
@@ -34,6 +36,13 @@ class UserRouter(
     private fun Route.getSelf() {
         get<User.Me> {
             val user = userService.getUser(call.principal<UserIdPrincipal>()!!.name.toLong()) ?: return@get
+            call.respond(user)
+        }
+    }
+
+    private fun Route.getUser() {
+        get<User.Id> {
+            val user = userService.getUser(it.id) ?: return@get
             call.respond(user)
         }
     }
@@ -74,6 +83,23 @@ class UserRouter(
                     is NotFoundException -> call.respond(HttpStatusCode.NotFound)
                     is IllegalCallerException -> call.respond(HttpStatusCode.Unauthorized)
                     is IllegalArgumentException -> call.respond(HttpStatusCode.BadRequest)
+                }
+            }
+        }
+    }
+
+    private fun Route.deleteUser() {
+        delete<User.Id> {
+            val caller = userService.getUser(call.principal<UserIdPrincipal>()!!.name.toLong()) ?: run {
+                call.respond(HttpStatusCode.Unauthorized)
+                return@delete
+            }
+            userService.with(caller).deleteUser(it.id).onSuccess {
+                call.respond(HttpStatusCode.NoContent)
+            }.onFailure { failure ->
+                when(failure) {
+                    is NotFoundException -> call.respond(HttpStatusCode.NotFound)
+                    is IllegalCallerException -> call.respond(HttpStatusCode.Forbidden, failure.message ?: "")
                 }
             }
         }

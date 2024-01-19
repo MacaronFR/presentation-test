@@ -165,4 +165,53 @@ class UserServiceTest(
         verify { userRepository.lastId }
         confirmVerified(userRepository)
     }
+
+    @Test
+    fun `Should not delete user without caller`() {
+        val userId = 1L
+        assertThatExceptionOfType(IllegalCallerException::class.java).isThrownBy {
+            userService.deleteUser(userId)
+        }.withMessage("Caller must be set set using with function")
+    }
+
+    @Test
+    fun `Should not delete user not found`() {
+        val caller = User(1, "Denis", 1)
+        val userId = 2L
+        every { userRepository[userId] } returns null
+        val result = userService.with(caller).deleteUser(userId)
+        assertThat(result.isSuccess).isFalse()
+        assertThat(result.exceptionOrNull()).isNotNull()
+            .isExactlyInstanceOf(NotFoundException::class.java)
+        verify(exactly = 1) { userRepository[userId] }
+        verify(exactly = 0) { userRepository.delete(userId) }
+        confirmVerified(userRepository)
+    }
+
+    @Test
+    fun `Should not delete user with higher scope`() {
+        val caller = User(1, "Denis", 1)
+        val userId = 2L
+        val user = User(userId, "Zoé", 2)
+        every { userRepository[userId] } returns user
+        val result = userService.with(caller).deleteUser(userId)
+        assertThat(result.isSuccess).isFalse()
+        assertThat(result.exceptionOrNull()).isNotNull()
+            .isExactlyInstanceOf(IllegalCallerException::class.java)
+        verify { userRepository[userId] }
+        verify(exactly = 0) { userRepository.delete(userId) }
+    }
+
+    @Test
+    fun `Should delete user`() {
+        val caller = User(1, "Denis", 1)
+        val userId = 2L
+        val user = User(userId, "Zoé", 1)
+        every { userRepository[userId] } returns user
+        every { userRepository.delete(userId) } returns Result.success(user)
+        val result = userService.with(caller).deleteUser(userId)
+        assertThat(result.isSuccess).isTrue()
+        assertThat(result.getOrNull()).isNotNull()
+            .isEqualTo(user)
+    }
 }
