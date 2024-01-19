@@ -63,7 +63,7 @@ class UserServiceTest {
     }
 
     @Test
-    fun `Shoud not get deleted user`() {
+    fun `Should not get deleted user`() {
         val user = User(2, "Zoé", 1)
         userService.with(caller).createUser(UserCreation(user.name, user.scope))
         val result1 = userService.getUser(user.id)
