@@ -4,7 +4,6 @@ import fr.imacaron.presentationtest.core.service.UserService
 import fr.imacaron.presentationtest.core.type.User
 import fr.imacaron.presentationtest.core.type.UserCreation
 import fr.imacaron.presentationtest.core.type.UserUpdate
-import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test

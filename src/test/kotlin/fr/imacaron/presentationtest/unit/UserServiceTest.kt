@@ -7,13 +7,10 @@ import fr.imacaron.presentationtest.core.type.UserCreation
 import fr.imacaron.presentationtest.core.type.UserUpdate
 import fr.imacaron.presentationtest.exception.IllegalCallerException
 import fr.imacaron.presentationtest.exception.NotFoundException
-import io.mockk.MockKAnnotations
-import io.mockk.confirmVerified
-import io.mockk.every
+import io.mockk.*
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
-import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatExceptionOfType
 import org.junit.jupiter.api.Test
