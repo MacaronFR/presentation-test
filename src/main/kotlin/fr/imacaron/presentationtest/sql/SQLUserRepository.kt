@@ -6,8 +6,6 @@ import fr.imacaron.presentationtest.core.type.UserCreation
 import fr.imacaron.presentationtest.exception.NotFoundException
 import org.ktorm.database.Database
 import org.ktorm.dsl.eq
-import org.ktorm.dsl.insert
-import org.ktorm.dsl.max
 import org.ktorm.entity.*
 import org.ktorm.schema.Table
 import org.ktorm.schema.int
@@ -52,7 +50,7 @@ class SQLUserRepository(private val db: Database): UserRepository() {
     }
 
     object Users: Table<UserEntity>("USERS") {
-        val id = long("id").bindTo { it.id }
+        val id = long("id").primaryKey().bindTo { it.id }
         val name = varchar("name").bindTo { it.name }
         val scope = int("scope").bindTo { it.scope }
     }
