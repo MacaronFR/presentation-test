@@ -24,7 +24,7 @@ class SQLUserRepository(private val db: Database): UserRepository() {
 
     override fun set(id: Long, user: User) {
         db.users.find { it.id eq id }?.let {
-            it.id = user.id
+            it.name = user.name
             it.scope = user.scope
             it.flushChanges()
         } ?: throw NotFoundException("User not found")
@@ -55,17 +55,6 @@ class SQLUserRepository(private val db: Database): UserRepository() {
         val scope = int("scope").bindTo { it.scope }
     }
 
-    private val User.entity
-        get() = let { user ->
-            UserEntity {
-                id = user.id
-                name = user.name
-                scope = user.scope
-            }
-        }
-
-    private operator fun User.Companion.invoke(entity: UserEntity) = User(entity.id, entity.name, entity.scope)
-
     interface UserEntity: Entity<UserEntity> {
         var id: Long
         var name: String
@@ -75,5 +64,16 @@ class SQLUserRepository(private val db: Database): UserRepository() {
     }
 
 }
+
+operator fun User.Companion.invoke(entity: SQLUserRepository.UserEntity) = User(entity.id, entity.name, entity.scope)
+
+val User.entity
+    get() = let { user ->
+        SQLUserRepository.UserEntity {
+            id = user.id
+            name = user.name
+            scope = user.scope
+        }
+    }
 
 val Database.users get() = this.sequenceOf(SQLUserRepository.Users)

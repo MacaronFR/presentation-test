@@ -26,13 +26,21 @@ fun Application.module() {
     installContentNegotiation()
     installCallLogging()
     installResources()
-    val database = Database.connect("jdbc:mariadb://localhost:3306/test", driver = "org.mariadb.jdbc.Driver", dialect = MySqlDialect(), user = "root", password = "secret")
+    val database = database()
     val userRepository = SQLUserRepository(database)
     val userService = UserService(userRepository)
     UserRouter(userService).apply { this@module.route() }
 }
 
 const val authName = "auth"
+
+fun Application.database() = Database.connect(
+    environment.config.property("db.url").getString(),
+    driver = "org.mariadb.jdbc.Driver",
+    dialect = MySqlDialect(),
+    user = environment.config.property("db.user").getString(),
+    password = environment.config.property("db.password").getString()
+)
 
 fun Application.installAuth() {
     install(Authentication) {

@@ -27,6 +27,9 @@ dependencies {
     implementation("io.ktor:ktor-server-auth:$ktor_version")
     implementation("io.ktor:ktor-server-resources:$ktor_version")
     implementation("io.ktor:ktor-server-call-logging:$ktor_version")
+    implementation("io.ktor:ktor-client-auth:$ktor_version")
+    implementation("io.ktor:ktor-client-content-negotiation:$ktor_version")
+    implementation("io.ktor:ktor-client-resources:$ktor_version")
     implementation("ch.qos.logback:logback-classic:1.4.12")
 
     testImplementation("org.jetbrains.kotlin:kotlin-test")
