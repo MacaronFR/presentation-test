@@ -19,7 +19,6 @@ import io.ktor.server.testing.*
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.ktorm.entity.add
-import org.ktorm.entity.map
 import org.testcontainers.junit.jupiter.Testcontainers
 
 @Testcontainers
@@ -79,8 +78,6 @@ class UserRouterTest: MariaDBContainers() {
             setBody(userToCreate)
             bearerAuth(caller.id.toString())
         }
-
-        println(db.users.map { User(it.id, it.name, it.scope) })
 
         assertThat(response.status).isEqualTo(HttpStatusCode.Created)
         assertThat(response.body<User>()).extracting("name", "scope").containsExactly(userToCreate.name, userToCreate.scope)
